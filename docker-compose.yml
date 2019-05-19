@@ -1,0 +1,22 @@
+version: '2.2'
+services:
+  rabbit:
+    image: "rabbitmq"
+    ports:
+     - "5680:5672"
+  flask-app:
+    build:
+      context: flask-app
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+     - rabbit
+  mail-sender:
+    build:
+      context: mail-sender
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+     - rabbit

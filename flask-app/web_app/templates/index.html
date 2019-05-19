@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Hi, {{ current_user.username }}!</h1>
+    {% if current_user.confirmed%}
+        <div> Your account confirmed </div>
+    {% else %}
+        <div> Your account not confirmed  </div>
+    {% endif %}
+
+{% endblock %}
+
