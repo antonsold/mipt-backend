@@ -1,17 +1,14 @@
-FROM python:3.4-alpine
-ADD . /code
-WORKDIR ./code
+FROM python:3.6
 
-ENV FLASK_APP first_app.py
+ADD requirements.txt /app/
+WORKDIR /app/
 
-RUN apk update \
-    && apk add libpq postgresql-dev \
-    && apk add build-base
+RUN pip install --no-cache-dir -r requirements.txt && \
+    echo "pip freeze:" && pip freeze
 
-RUN pip install -r requirements.txt
-EXPOSE 8000
+ADD . /app/
 
-CMD ["flask", "db", "init"]
-CMD ["flask", "db", "migrate", "-m", "\"Add two table\""]
-CMD ["flask", "db", "upgrade"]
-CMD ["flask", "run", "--host=0.0.0.0"]
+ENV LISTEN_HOST=0.0.0.0
+ENV LISTEN_PORT=8080
+
+CMD ["python3", "-u", "app.py"]

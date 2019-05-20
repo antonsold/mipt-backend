@@ -1,24 +1,23 @@
-import os
+from os import getenv
 
-class Config(object):
-    # main config
-    SECRET_KEY = 'my_precious'
-    SECURITY_PASSWORD_SALT = 'my_precious_two'
-    DEBUG = False
-    BCRYPT_LOG_ROUNDS = 13
-    WTF_CSRF_ENABLED = True
-    DEBUG_TB_ENABLED = False
-    DEBUG_TB_INTERCEPT_REDIRECTS = False
 
-    # mail settings
-    MAIL_SERVER = 'smtp.googlemail.com'
-    MAIL_PORT = 465
-    MAIL_USE_TLS = False
-    MAIL_USE_SSL = True
+def getsec(envname, secname=None, default=None):
+    val = getenv(envname)
+    if val is None and secname is not None:
+        try:
+            val = open('/run/secrets/' + secname).read().strip()
+        except FileNotFoundError:
+            pass
+    if val is None:
+        val = default
+    return val
 
-    # gmail authentication
-    MAIL_USERNAME = 'kek'
-    MAIL_PASSWORD = 'abacaba2'
 
-    # mail accounts
-    MAIL_DEFAULT_SENDER = 'buchnev.vs@phystech.edu'
+RABBIT_HOST = getenv('RABBIT_HOST', 'localhost')
+RABBIT_PORT = getenv('RABBIT_PORT', 5672)
+
+SMTP_USER, SMTP_PASSWORD = getsec('SMTP_CREDS', 'mailer_smtp').split(':')
+print(SMTP_USER, SMTP_PASSWORD)
+
+SMTP_HOST = getenv('SMTP_HOST', 'smtp.gmail.com')
+SMTP_PORT = getenv('SMTP_PORT', 465)

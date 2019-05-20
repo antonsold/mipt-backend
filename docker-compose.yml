@@ -1,22 +1,35 @@
-version: '2.2'
+version: '3.3'
+
 services:
+  flask:
+    build: flask-app
+    environment:
+      MONGO_HOST: mongo
+      MONGO_DB: dmler
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: '5672'
+    ports:
+      - '127.0.0.1:8080:8080'
+    secrets:
+      - flask_key
+  
+  mailer:
+    build: mail-sender
+    environment:
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: '5672'
+    secrets:
+      - mailer_smtp
+
+  mongo:
+    image: 'mongo'
+
   rabbit:
-    image: "rabbitmq"
-    ports:
-     - "5680:5672"
-  flask-app:
-    build:
-      context: flask-app
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "5000:5000"
-    depends_on:
-     - rabbit
-  mail-sender:
-    build:
-      context: mail-sender
-      dockerfile: Dockerfile
-    restart: always
-    depends_on:
-     - rabbit
+    image: 'rabbitmq'
+    # ports:
+
+secrets:
+  flask_key:
+    file: secrets/flask_key
+  mailer_smtp:
+    file: secrets/mailer_smtp

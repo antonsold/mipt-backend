@@ -1,11 +1,11 @@
-FROM alpine:3.5
-RUN apk add --update py2-pip
-RUN apk add --update bash
-WORKDIR /code
-ADD . /code
+FROM python:3.6
 
-ENV APP_MAIL_USERNAME "buchnev, kozinov"
-ENV APP_MAIL_PASSWORD="backend2019"
+ADD requirements.txt /app/
+WORKDIR /app/
 
-RUN pip install -r /code/requirements.txt
-CMD ["/code/wait-for-it.sh", "rabbit:5672", "--", "python", "-u", "/code/receive.py"]
+RUN pip install --no-cache-dir -r requirements.txt && \
+    echo "pip freeze:" && pip freeze
+
+ADD . /app/
+
+CMD ["python3", "-u", "mailer.py"]

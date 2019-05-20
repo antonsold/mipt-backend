@@ -1,0 +1,4 @@
+# testing virtualenv
+venv
+requirements-dev.txt
+__pycache__

@@ -1,12 +1,21 @@
-import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+from os import getenv
 
-class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'strong-password'
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+def getsec(envname, secname=None, default=None):
+    val = getenv(envname)
+    if val is None and secname is not None:
+        try:
+            val = open('/run/secrets/' + secname).read().strip()
+        except FileNotFoundError:
+            pass
+    if val is None:
+        val = default
+    return val
 
-    SECURITY_PASSWORD_SALT = 'my_precious_two'
 
+SECRET_KEY = getsec('SECRET_KEY', 'flask_key')
+
+ACTIVATION_TOKEN_LIFETIME = int(getenv('ACTIVATION_TOKEN_LIFETIME', 60 * 60 * 24))
+
+RABBIT_HOST = getenv('RABBIT_HOST', 'localhost')
+RABBIT_PORT = getenv('RABBIT_PORT', 5672)
